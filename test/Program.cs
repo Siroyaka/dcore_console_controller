@@ -1,5 +1,5 @@
-﻿using System;
-using ConsoleController.IO;
+using System;
+using ConsoleIOTest.BasicTest;
 
 namespace ConsoleIOTest
 {
@@ -7,8 +7,8 @@ namespace ConsoleIOTest
     {
         static void Main(string[] args)
         {
-            var console = new ConsoleIO();
-            Console.WriteLine(console.ReadLine());
+            var test = new ClearRow();
+            test.Test();
         }
     }
 }
