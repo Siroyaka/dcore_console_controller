@@ -4,7 +4,7 @@ namespace ConsoleIOTest.BasicTest
 {
     public class ClearRow
     {
-        public bool Test()
+        public bool SingleRow()
         {
             var console = new InteractiveConsole();
             console.WriteLine("test1");
@@ -16,5 +16,16 @@ namespace ConsoleIOTest.BasicTest
             console.WriteLine("delete OK");
             return true;
         }
+
+        public bool Block()
+        {
+            var console = new InteractiveConsole();
+            console.WriteLine("これは残す");
+            console.WriteLine("test1", "test2", "test3", "test4", "test5");
+            console.WaitAnyKey();
+            console.ClearLastBlock();
+            return true;
+        }
+
     }
 }

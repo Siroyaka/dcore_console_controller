@@ -8,7 +8,7 @@ namespace ConsoleIOTest
         static void Main(string[] args)
         {
             var test = new ClearRow();
-            test.Test();
+            test.Block();
         }
     }
 }
