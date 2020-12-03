@@ -7,8 +7,9 @@ namespace ConsoleIOTest
     {
         static void Main(string[] args)
         {
-            var test = new ClearRow();
-            test.Block();
+            //var test = new ClearRow();
+            var test = new HorizontalList();
+            test.BaseTest();
         }
     }
 }

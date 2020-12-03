@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace ConsoleIO
@@ -41,12 +42,14 @@ namespace ConsoleIO
         /// <param name="txts">表示するテキスト(複数可能)</param>
         public void WriteLine(params string[] txts)
         {
+            Console.CursorVisible = false;
             rowBlockStack.Push(txts.Length);
             foreach(var txt in txts)
             {
                 StackRow(txt);
                 Console.WriteLine(txt);
             }
+            Console.CursorVisible = true;
         }
 
         public string ReadLine()
@@ -93,6 +96,61 @@ namespace ConsoleIO
 
             rowLengthStack.Clear();
             rowBlockStack.Clear();
+        }
+
+        // 左右でページ切り替えを行う
+        public int HorizontalMultiSelect(string[] list, int viewNum, int defalutValue = 0)
+        {
+            var selectValue = defalutValue;
+            var loop = true;
+            while(loop)
+            {
+                int maxHeight = Math.Min(Console.BufferHeight - 1, viewNum);
+                int pageCount = list.Length / maxHeight + (list.Length % maxHeight == 0 ? 0 : 1);
+                int page = selectValue / maxHeight;
+
+                Func<int, string> choiseIcon = (int i) => i == (selectValue % maxHeight) ? ">" : " ";
+
+                var viewList = list.Skip(page * maxHeight).Take(maxHeight).Select((x, i) => $"{choiseIcon(i)} {x}").ToArray();
+
+                WriteLine(viewList);
+
+                var input = Console.ReadKey(true);
+
+                var addValue = 0;
+
+                switch(input.Key)
+                {
+                    case ConsoleKey.Enter:
+                        loop = false;
+                        break;
+                    // 上への動作
+                    case ConsoleKey.UpArrow:
+                    case ConsoleKey.J:
+                        addValue = -1;
+                        break;
+                    // 下への動作
+                    case ConsoleKey.DownArrow:
+                    case ConsoleKey.K:
+                        addValue = 1;
+                        break;
+                    // 左への動作
+                    case ConsoleKey.LeftArrow:
+                    case ConsoleKey.H:
+                        addValue = maxHeight * -1;
+                        break;
+                    // 右への動作
+                    case ConsoleKey.RightArrow:
+                    case ConsoleKey.L:
+                        addValue = maxHeight;
+                        break;
+                    default:
+                        break;
+                }
+                ClearLastBlock();
+                selectValue = Math.Max(Math.Min(selectValue + addValue, list.Length - 1), 0);
+            }
+            return selectValue;
         }
         
         /// <summary>
@@ -146,6 +204,7 @@ namespace ConsoleIO
         /// <param name="len">文字数</param>
         private void ClearRow(int len)
         {
+            Console.CursorVisible = false;
             while(len > 0)
             {
                 var w = Console.BufferWidth;
@@ -159,6 +218,7 @@ namespace ConsoleIO
                 // カーソル位置が上限だったときは終わる
                 if(cursorTop == 0) break;
             }
+            Console.CursorVisible = true;
         }
 
         public void PageClear()
