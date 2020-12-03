@@ -1,5 +1,5 @@
 # ConsoleIO
-ConsoleController.IO名前空間を呼び出すとConsoleIOが使えるようになる
+InteractiveConsoleを使える
 
 ## 実装予定
 - 複数の選択肢から1つを選ぶ処理
