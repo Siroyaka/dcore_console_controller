@@ -99,7 +99,7 @@ namespace ConsoleIO
         }
 
         // 左右でページ切り替えを行う
-        public int HorizontalMultiSelect(string[] list, int viewNum, int defalutValue = 0)
+        public int HorizontalSelect(string[] list, int viewNum, int defalutValue = 0)
         {
             var selectValue = defalutValue;
             var loop = true;
@@ -152,7 +152,7 @@ namespace ConsoleIO
             }
             return selectValue;
         }
-        
+
         /// <summary>
         /// 最終行を削除する
         /// </summary>

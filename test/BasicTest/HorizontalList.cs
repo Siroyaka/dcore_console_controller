@@ -10,7 +10,7 @@ namespace ConsoleIOTest.BasicTest
         {
             var console = new InteractiveConsole();
             var list = Enumerable.Range(0, 100).Select(x => x.ToString()).ToArray();
-            var select = console.HorizontalMultiSelect(list, 12);
+            var select = console.HorizontalSelect(list, 12);
             console.WriteLine($"index:{select} value:{list[select]}");
             return true;
         }
