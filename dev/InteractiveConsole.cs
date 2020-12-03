@@ -153,6 +153,77 @@ namespace ConsoleIO
             return selectValue;
         }
 
+        public int[] HorizontalMultiSelect(string[] list, int viewNum)
+        {
+            return HorizontalMultiSelect(list, viewNum, new int[]{});
+        }
+
+        public int[] HorizontalMultiSelect(string[] list, int viewNum, int[] selectedNums)
+        {
+            bool[] selectedFlgs = list.Select((_, i) => selectedNums.Contains(i)).ToArray();
+            int selectNum = 0;
+            var loop = true;
+            while(loop)
+            {
+                int maxHeight = Math.Min(Console.BufferHeight - 1, viewNum);
+                int pageCount = list.Length / maxHeight + (list.Length % maxHeight == 0 ? 0 : 1);
+                var page = selectNum / maxHeight;
+
+                string choiseIcon(int i)
+                {
+                    var selected = i == selectNum ? ">" : " ";
+                    var choosed = selectedFlgs[i] ? "*" : " ";
+                    return $"{selected} {choosed}";
+                }
+
+                var viewList = list.Select((x, i) => $"{choiseIcon(i)} {x}").Skip(page * maxHeight).Take(maxHeight).ToArray();
+
+                WriteLine(viewList);
+
+                var input = Console.ReadKey(true);
+
+                var addValue = 0;
+
+                switch(input.Key)
+                {
+                    case ConsoleKey.Enter:
+                        loop = false;
+                        break;
+                    // 上への動作
+                    case ConsoleKey.UpArrow:
+                    case ConsoleKey.J:
+                        addValue = -1;
+                        break;
+                    // 下への動作
+                    case ConsoleKey.DownArrow:
+                    case ConsoleKey.K:
+                        addValue = 1;
+                        break;
+                    // 左への動作
+                    case ConsoleKey.LeftArrow:
+                    case ConsoleKey.H:
+                        addValue = maxHeight * -1;
+                        break;
+                    // 右への動作
+                    case ConsoleKey.RightArrow:
+                    case ConsoleKey.L:
+                        addValue = maxHeight;
+                        break;
+                    case ConsoleKey.Spacebar:
+                        selectedFlgs[selectNum] = !selectedFlgs[selectNum];
+                        break;
+                    default:
+                        break;
+                }
+                ClearLastBlock();
+                selectNum = Math.Max(Math.Min(selectNum + addValue, list.Length - 1), 0);
+            }
+            return selectedFlgs.Select((x, i) => new {value = x, index = i}).Aggregate(new List<int>(), (acc, x) => {
+                if(x.value) acc.Add(x.index);
+                return acc;
+            }).ToArray();
+        }
+
         /// <summary>
         /// 最終行を削除する
         /// </summary>
