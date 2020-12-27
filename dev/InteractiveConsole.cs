@@ -126,12 +126,12 @@ namespace ConsoleIO
                         break;
                     // 上への動作
                     case ConsoleKey.UpArrow:
-                    case ConsoleKey.J:
+                    case ConsoleKey.K:
                         addValue = -1;
                         break;
                     // 下への動作
                     case ConsoleKey.DownArrow:
-                    case ConsoleKey.K:
+                    case ConsoleKey.J:
                         addValue = 1;
                         break;
                     // 左への動作
@@ -191,12 +191,12 @@ namespace ConsoleIO
                         break;
                     // 上への動作
                     case ConsoleKey.UpArrow:
-                    case ConsoleKey.J:
+                    case ConsoleKey.K:
                         addValue = -1;
                         break;
                     // 下への動作
                     case ConsoleKey.DownArrow:
-                    case ConsoleKey.K:
+                    case ConsoleKey.J:
                         addValue = 1;
                         break;
                     // 左への動作

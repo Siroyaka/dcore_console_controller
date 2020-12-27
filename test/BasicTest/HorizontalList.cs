@@ -26,5 +26,18 @@ namespace ConsoleIOTest.BasicTest
             }
             return true;
         }
+
+        public bool MultiTestWithDefault()
+        {
+            var console = new InteractiveConsole();
+            var list = Enumerable.Range(0, 100).Select(x => x.ToString()).ToArray();
+            var defaultSelect = new int[]{10, 20, 35, 41};
+            var selectMultiValue = console.HorizontalMultiSelect(list, 10, defaultSelect);
+            foreach(var item in selectMultiValue)
+            {
+                console.WriteLine($"index:{item} value:{list[item]}");
+            }
+            return true;
+        }
     }
 }

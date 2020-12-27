@@ -9,7 +9,7 @@ namespace ConsoleIOTest
         {
             //var test = new ClearRow();
             var test = new HorizontalList();
-            test.MultiTest();
+            test.MultiTestWithDefault();
         }
     }
 }
