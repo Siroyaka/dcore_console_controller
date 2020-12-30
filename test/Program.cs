@@ -8,8 +8,8 @@ namespace ConsoleIOTest
         static void Main(string[] args)
         {
             //var test = new ClearRow();
-            var test = new HorizontalList();
-            test.MultiTestWithDefault();
+            var test = new Pager();
+            test.BaseTest();
         }
     }
 }

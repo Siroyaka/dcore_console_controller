@@ -225,6 +225,59 @@ namespace ConsoleIO
         }
 
         /// <summary>
+        /// 与えられた関数で取得できるstringをコンソール上に表示する
+        /// 左右でページ切り替えを行う
+        /// indexはページ数より1すくないので注意してね
+        /// </summary>
+        /// <param name="readData">indexをもとにstringを出力する関数</param>
+        /// <param name="maxIndex">ページ数の最大数</param>
+        /// <returns>enterを押した時に表示していたページのindex</returns>
+        public int ShowPager(Func<int, string[]> readData, int maxIndex, int defaultIndex = 0)
+        {
+            var loop = true;
+            var index = defaultIndex;
+            while(loop)
+            {
+                var text = readData(index);
+
+                WriteLine($"----page:{index + 1}----");
+                WriteLine(text);
+
+                var input = Console.ReadKey(true);
+
+                var addValue = 0;
+
+                switch(input.Key)
+                {
+                    case ConsoleKey.Enter:
+                        loop = false;
+                        break;
+                    // 上への動作
+                    case ConsoleKey.UpArrow:
+                    case ConsoleKey.K:
+                    case ConsoleKey.LeftArrow:
+                    case ConsoleKey.H:
+                        addValue = -1;
+                        break;
+                    // 下への動作
+                    case ConsoleKey.DownArrow:
+                    case ConsoleKey.J:
+                    case ConsoleKey.RightArrow:
+                    case ConsoleKey.L:
+                        addValue = 1;
+                        break;
+                    default:
+                        break;
+                }
+                ClearLastBlock();
+                ClearLastBlock();
+
+                index = Math.Max(Math.Min(index + addValue, maxIndex - 1), 0);
+            }
+            return index;
+        }
+
+        /// <summary>
         /// 最終行を削除する
         /// </summary>
         public void ClearLastRow()
