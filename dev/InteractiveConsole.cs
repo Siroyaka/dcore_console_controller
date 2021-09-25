@@ -22,6 +22,9 @@ namespace ConsoleIO
         /// </summary>
         private Stack<int> rowBlockStack;
 
+        private int stackBlockCount = 0;
+        private bool blockStackMode = false;
+
         public InteractiveConsole()
         {
             rowLengthStack = new Stack<int>();
@@ -43,13 +46,34 @@ namespace ConsoleIO
         public void WriteLine(params string[] txts)
         {
             Console.CursorVisible = false;
-            rowBlockStack.Push(txts.Length);
+            if(blockStackMode)
+            {
+                stackBlockCount += txts.Length;
+            }
+            else
+            {
+                rowBlockStack.Push(txts.Length);
+            }
+            var outputLine = string.Join('\n', txts);
+
             foreach(var txt in txts)
             {
                 StackRow(txt);
-                Console.WriteLine(txt);
             }
+            Console.WriteLine(outputLine);
             Console.CursorVisible = true;
+        }
+
+        public void StartStackBlock()
+        {
+            blockStackMode = true;
+        }
+
+        public void EndStackBlock()
+        {
+            blockStackMode = false;
+            rowBlockStack.Push(this.stackBlockCount);
+            this.stackBlockCount = 0;
         }
 
         public string ReadLine()
@@ -70,15 +94,28 @@ namespace ConsoleIO
             if(rowLengthStack.Count == 0) return;
             if(rowBlockStack.Count == 0) return;
 
-            for(var blockLen = rowBlockStack.Pop(); blockLen > 0; blockLen--)
-            {
-                var len = rowLengthStack.Pop();
+            // Calculate the number of rows to delete
+            // カーソルが一番左にあった時は新しい行だと考え、行を1つ戻す
+            var blockRows = rowBlockStack.Pop();
+            int endCursorTop = Console.CursorTop - (Console.CursorLeft == 0 ? 1 : 0);
+            var p = rowLengthStack.Pop();
+            rowLengthStack.Push(p);
+            var rowCount = (int)Enumerable.Range(0, blockRows).Sum(_ => Math.Ceiling((double)rowLengthStack.Pop() / Console.BufferWidth));
+            int startCursorTop = rowCount > endCursorTop ? 0 : (endCursorTop - rowCount + 1);
+            var blankTexts = string.Join('\n', Enumerable.Range(0, rowCount).Select(_ => new string(' ', Console.BufferWidth)).ToArray());
+            SetCursorPosition(0, startCursorTop);
+            Console.WriteLine(blankTexts);
+            SetCursorPosition(0, startCursorTop);
 
-                // カーソルが一番左にあった時は新しい行だと考え、行を1つ戻す
-                if(Console.CursorLeft == 0) SetCursorPosition(0, Console.CursorTop - 1);
-                ClearRow(len);
-                if(Console.CursorTop == 0) break;
-            }
+            //for(var blockLen = rowBlockStack.Pop(); blockLen > 0; blockLen--)
+            //{
+            //    var len = rowLengthStack.Pop();
+
+            //    // カーソルが一番左にあった時は新しい行だと考え、行を1つ戻す
+            //    if(Console.CursorLeft == 0) SetCursorPosition(0, Console.CursorTop - 1);
+            //    ClearRow(len);
+            //    if(Console.CursorTop == 0) break;
+            //}
         }
 
         public void ClearAllRow()
@@ -240,8 +277,10 @@ namespace ConsoleIO
             {
                 var text = readData(index);
 
+                StartStackBlock();
                 WriteLine($"----page:{index + 1}----");
                 WriteLine(text);
+                EndStackBlock();
 
                 var input = Console.ReadKey(true);
 
@@ -269,7 +308,6 @@ namespace ConsoleIO
                     default:
                         break;
                 }
-                ClearLastBlock();
                 ClearLastBlock();
 
                 index = Math.Max(Math.Min(index + addValue, maxIndex - 1), 0);
@@ -302,13 +340,16 @@ namespace ConsoleIO
         /// </summary>
         private void SetCursorPosition(int left, int top)
         {
-            if(left > Console.BufferWidth) left = Console.BufferWidth;
-            else if (left < 0) left = 0;
+            // cursor left and top position do not under 0 and over buffer.
+            int leftPosition = Math.Max(0, Math.Min(left, Console.BufferWidth));
+            // if(left > Console.BufferWidth) left = Console.BufferWidth;
+            // else if (left < 0) left = 0;
 
-            if(top > Console.BufferHeight) top = Console.BufferHeight;
-            else if (top < 0) top = 0;
+            int topPosition = Math.Max(0, Math.Min(top, Console.BufferHeight));
+            // if(top > Console.BufferHeight) top = Console.BufferHeight;
+            // else if (top < 0) top = 0;
 
-            Console.SetCursorPosition(left, top);
+            Console.SetCursorPosition(leftPosition, topPosition);
         }
 
         /// <summary>
@@ -337,7 +378,9 @@ namespace ConsoleIO
                 len -= w;
 
                 var cursorTop = Console.CursorTop;
-                SetCursorPosition(0, cursorTop - (len > 0 ? 1 : 0));
+                //SetCursorPosition(0, cursorTop - (len > 0 ? 1 : 0));
+                //SetCursorPosition(0, cursorTop - (len > 0 ? 2 : 1));
+                SetCursorPosition(0, cursorTop - 1);
 
                 // カーソル位置が上限だったときは終わる
                 if(cursorTop == 0) break;

@@ -7,7 +7,7 @@ namespace ConsoleIOTest.BasicTest
         public bool SingleRow()
         {
             var console = new InteractiveConsole();
-            console.WriteLine("test1");
+            console.WriteLine("カーソルが一番左にあった時は新しい行だと考え、行を1つ戻す");
             console.WriteLine("test2");
             console.ReadLine();
             console.ClearLastRow();
